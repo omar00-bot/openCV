@@ -10,7 +10,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 # initialize the WindowCapture class
-wincap = WindowCapture('Albion Online Client')
+wincap = WindowCapture('OpenCV: Template Matching - Google Chrome')
 
 loop_time = time()
 while(True):
@@ -31,3 +31,4 @@ while(True):
         break
 
 print('Done.')
+wincap.list_window_names()
