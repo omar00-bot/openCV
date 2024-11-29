@@ -10,7 +10,10 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 # initialize the WindowCapture class
+WindowCapture.list_window_names()
 wincap = WindowCapture('OpenCV: Template Matching - Google Chrome')
+
+
 
 loop_time = time()
 while(True):
