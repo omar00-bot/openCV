@@ -1,5 +1,6 @@
 import numpy as np
 import win32gui, win32ui, win32con
+import time
 
 class window_capture:
     
@@ -9,12 +10,14 @@ class window_capture:
     hwnd = None
     cropped_x = 0
     cropped_y = 0
-    
+    window_name = None
     
     # constructor
     def __init__(self, window_name):
         # find the handle of the window we want to capture
+        self.window_name = window_name
         if window_name is None:
+            print('No window found')
             self.hwnd = win32gui.GetDesktopWindow()
         else:
             self.hwnd = win32gui.FindWindow(None, window_name)
@@ -23,9 +26,10 @@ class window_capture:
                 raise Exception('Window not found: {}'.format(window_name))
         
         # get the window size
-        window_rect = win32gui.GetWindowRect(self.hwnd) 
-        self.w = window_rect[2]-window_rect[0]
-        self.h = window_rect[3]-window_rect[1]
+        Left , Top, Right, Bot = win32gui.GetWindowRect(self.hwnd) 
+        self.w = Right - Left
+        self.h = Bot - Top
+        print(self.w, self.h)
         
         # # account for the window border and titlebar and cut them off
         # border_pixels = 8
@@ -37,18 +41,23 @@ class window_capture:
            
 
     def get_screenshot(self):
+        self.hwnd = win32gui.FindWindow(None, self.window_name)
+        Left , Top, Right, Bot = win32gui.GetWindowRect(self.hwnd) 
+        self.w = Right - Left
+        self.h = Bot - Top
+        print(self.w, self.h)
         
-        window_rect = win32gui.GetWindowRect(self.hwnd) 
-        self.w = window_rect[2]-window_rect[0]
-        self.h = window_rect[3]-window_rect[1]
+        # win32gui.SetForegroundWindow(self.hwnd)
+
         
-        wDC = win32gui.GetWindowDC(self.hwnd)
+        hdesktop = win32gui.GetDesktopWindow()
+        wDC = win32gui.GetWindowDC(hdesktop)
         dcObj=win32ui.CreateDCFromHandle(wDC)
         cDC=dcObj.CreateCompatibleDC()
         dataBitMap = win32ui.CreateBitmap()
         dataBitMap.CreateCompatibleBitmap(dcObj, self.w, self.h)
         cDC.SelectObject(dataBitMap)
-        cDC.BitBlt((0,0),(self.w, self.h) , dcObj, (self.cropped_x, self.cropped_y), win32con.SRCCOPY)
+        cDC.BitBlt((0,0),(self.w, self.h) , dcObj, (Left, Top), win32con.SRCCOPY)
         
         # save image
         # dataBitMap.SaveBitmapFile(cDC, 'out.bmp')

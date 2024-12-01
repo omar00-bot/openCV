@@ -23,7 +23,7 @@ while(True):
     screenshot = wincap.get_screenshot()
     cv.imshow('Computer vision', screenshot)
     
-    # print('FPS {}'.format(1 / (time() - loop_time)))
+    print('FPS {}'.format(1 / (time() - loop_time)))
     loop_time = time()
     # press 'q' with the output window focused to exit.
     # waitKey(1) will delay for 1ms every loop to process the key press
