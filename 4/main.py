@@ -12,7 +12,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 
-wincap = window_capture('Welcome to TeraBox')
+wincap = window_capture('This PC')
 
 # captures all the windows opened 
 # comment if done on using it
