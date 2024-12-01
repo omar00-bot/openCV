@@ -1,45 +1,82 @@
-import win32gui
-import win32ui
-import win32con
-from ctypes import windll
-from PIL import Image
+"""
+Using DXcam to take screenshots. Only works on Windows.
+"""
+
 import time
-import ctypes
+start_time = time.time()
 
-hwnd_target = win32gui.FindWindow(None, '(123) YouTube - Google Chrome') # used for test 
+START_DELAY = 0.5
+NUM_FRAMES = 1000
+BBOX = None
+# BBOX = (1920//2-256, 1200//2-256, 1920//2+256, 1200//2+256)
+COUNT_UNIQUE = False
+DEBUG = True
 
-left, top, right, bot = win32gui.GetWindowRect(hwnd_target)
-w = right - left
-h = bot - top
+# =============================================================================
+# BEGIN SCREENSHOT CODE
+# =============================================================================
 
-win32gui.SetForegroundWindow(hwnd_target)
-time.sleep(1.0)
+import dxcam
+import numpy as np
+camera = dxcam.create()
+camera.start(target_fps=0, video_mode=False, region=BBOX)
+print("Screen:", camera.get_latest_frame().shape[:2][::-1])
 
-hdesktop = win32gui.GetDesktopWindow()
-hwndDC = win32gui.GetWindowDC(hdesktop)
-mfcDC  = win32ui.CreateDCFromHandle(hwndDC)
-saveDC = mfcDC.CreateCompatibleDC()
 
-saveBitMap = win32ui.CreateBitmap()
-saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
+def get_screenshot():
+    return camera.get_latest_frame()
+    # while True:
+    #     img = camera.grab(region=BBOX)
+    #     if img is not None:
+    #         return img
 
-saveDC.SelectObject(saveBitMap)
+# =============================================================================
+# END SCREENSHOT CODE
+# =============================================================================
 
-result = saveDC.BitBlt((0, 0), (w, h), mfcDC, (left, top), win32con.SRCCOPY)
+import cv2
 
-bmpinfo = saveBitMap.GetInfo()
-bmpstr = saveBitMap.GetBitmapBits(True)
 
-im = Image.frombuffer(
-    'RGB',
-    (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
-    bmpstr, 'raw', 'BGRX', 0, 1)
+# Make sure initial setup doesn't affect the benchmark
+def delay_start():
+    print(f"Starting in {START_DELAY} seconds...")
+    while time.time() < start_time + START_DELAY:
+        pass
+    print("Starting now!")
 
-win32gui.DeleteObject(saveBitMap.GetHandle())
-saveDC.DeleteDC()
-mfcDC.DeleteDC()
-win32gui.ReleaseDC(hdesktop, hwndDC)
 
-if result == None:
-    #PrintWindow Succeeded
-    im.save("test.png")
+def get_time_elapsed():
+    return time.time() - start_time - START_DELAY
+
+
+def main():
+    delay_start()
+
+    # Run the test
+    unique = set() if COUNT_UNIQUE else None
+    for i in range(NUM_FRAMES):
+        img = get_screenshot()
+        if DEBUG:
+            # Show screenshot with FPS in red
+            to_display = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
+            to_display = cv2.resize(to_display, (0, 0), fx=0.5, fy=0.5)
+            cv2.putText(to_display, f"FPS: {(i+1) / get_time_elapsed():.2f}",
+                        (10, 33), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.imshow("Screen", to_display)
+            
+            cv2.waitKey(1)
+        if COUNT_UNIQUE:
+            unique.add(img.tobytes())
+    
+    # Print results
+    time_taken = get_time_elapsed()
+    print(f"FPS: {NUM_FRAMES / time_taken:.2f}")
+    print(f"Time taken: {time_taken:.2f}s")
+    if COUNT_UNIQUE:
+        print(f"Unique frames: {len(unique)}/{NUM_FRAMES}")
+    if COUNT_UNIQUE or DEBUG:
+        print("WARNING: Debug options are on, benchmark will be inaccurate!")
+
+
+if __name__ == "__main__":
+    main()
