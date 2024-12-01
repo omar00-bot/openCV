@@ -24,20 +24,6 @@ class window_capture:
             print(window_name)
             if not self.hwnd:
                 raise Exception('Window not found: {}'.format(window_name))
-        
-        # get the window size
-        Left , Top, Right, Bot = win32gui.GetWindowRect(self.hwnd) 
-        self.w = Right - Left
-        self.h = Bot - Top
-        print(self.w, self.h)
-        
-        # # account for the window border and titlebar and cut them off
-        # border_pixels = 8
-        # titlebar_pixels = 0
-        # # self.w = self.w - border_pixels * 2
-        # # self.h = self.h - titlebar_pixels - border_pixels
-        # self.cropped_x = border_pixels
-        # self.cropped_y = titlebar_pixels
            
 
     def get_screenshot(self):
@@ -47,9 +33,16 @@ class window_capture:
         self.h = Bot - Top
         print(self.w, self.h)
         
+        # account for the window border and titlebar and cut them off
+        border_pixels = 8
+        titlebar_pixels = 8
+        self.w = self.w - border_pixels * 2
+        self.h = self.h - border_pixels
+        self.cropped_x = Left + border_pixels
+        self.cropped_y = titlebar_pixels
         # win32gui.SetForegroundWindow(self.hwnd)
 
-        
+
         hdesktop = win32gui.GetDesktopWindow()
         wDC = win32gui.GetWindowDC(hdesktop)
         dcObj=win32ui.CreateDCFromHandle(wDC)
@@ -57,7 +50,7 @@ class window_capture:
         dataBitMap = win32ui.CreateBitmap()
         dataBitMap.CreateCompatibleBitmap(dcObj, self.w, self.h)
         cDC.SelectObject(dataBitMap)
-        cDC.BitBlt((0,0),(self.w, self.h) , dcObj, (Left, Top), win32con.SRCCOPY)
+        cDC.BitBlt((0,0),(self.w, self.h) , dcObj, (self.cropped_x, Top), win32con.SRCCOPY)
         
         # save image
         # dataBitMap.SaveBitmapFile(cDC, 'out.bmp')

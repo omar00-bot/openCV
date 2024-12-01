@@ -15,12 +15,14 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # exit()
 
 # initialize the window_capture class
-wincap = window_capture('(123) YouTube - Google Chrome')
+wincap = window_capture('dBLIND - Flyff Universe - Google Chrome')
 
 
 loop_time = time()
 while(True):
     screenshot = wincap.get_screenshot()
+    cv.namedWindow("Computer vision", cv.WINDOW_NORMAL)
+    # screenshot = cv.resize(screenshot, (960, 540)) 
     cv.imshow('Computer vision', screenshot)
     
     print('FPS {}'.format(1 / (time() - loop_time)))
