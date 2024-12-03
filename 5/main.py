@@ -12,6 +12,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # captures all the windows opened 
 # comment if done on using it
+
 # window_capture.list_window_name(self=None)
 # exit()
 
