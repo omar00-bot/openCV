@@ -7,7 +7,7 @@ class window_capture:
     # properties
     w = 0 
     h = 0
-    hwnd = None
+    hwnd = None 
     cropped_x = 0
     cropped_y = 0
     window_name = None
@@ -38,7 +38,7 @@ class window_capture:
         titlebar_pixels = 8
         self.w = self.w - border_pixels * 2
         self.h = self.h - border_pixels
-        self.cropped_x = Left + border_pixels
+        self.cropped_x = border_pixels
         self.cropped_y = titlebar_pixels
         # win32gui.SetForegroundWindow(self.hwnd)
 
@@ -50,7 +50,7 @@ class window_capture:
         dataBitMap.CreateCompatibleBitmap(dcObj, self.w, self.h)
         cDC.SelectObject(dataBitMap)
         # cDC.BitBlt((0,0),(self.w, self.h) , dcObj, (self.cropped_x, Top), win32con.SRCCOPY)
-        cDC.BitBlt((0,0),(self.w, self.h) , dcObj, (8, 0), win32con.SRCCOPY)
+        cDC.BitBlt((0,0),(self.w, self.h) , dcObj, (self.cropped_x, 0), win32con.SRCCOPY)
         
         # save image
         # dataBitMap.SaveBitmapFile(cDC, 'out.bmp')

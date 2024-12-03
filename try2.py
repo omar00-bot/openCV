@@ -16,5 +16,5 @@ def background_screenshot(hwnd, width, height):
     win32gui.ReleaseDC(hwnd, wDC)
     win32gui.DeleteObject(dataBitMap.GetHandle())
 
-hwnd = win32gui.FindWindow(None, 'This PC')
+hwnd = win32gui.FindWindow(None, 'dBLIND - Flyff Universe - Google Chrome')
 background_screenshot(hwnd, 1280, 780)

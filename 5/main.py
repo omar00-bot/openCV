@@ -1,7 +1,8 @@
 import cv2 as cv
 import os
-from windowcapture_try import window_capture
+from windowcapture import window_capture
 from time import time
+from vision import findClickPositions
 
 
 
@@ -15,15 +16,20 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # exit()
 
 # initialize the window_capture class
-wincap = window_capture('This PC')
+wincap = window_capture('dBLIND - Flyff Universe - Google Chrome')
+# wincap = window_capture('This PC')
 
 
 loop_time = time()
 while(True):
+
     screenshot = wincap.get_screenshot()
-    cv.namedWindow("Computer vision", cv.WINDOW_NORMAL)
+    findClickPositions(screenshot, 'robot.jpg', 0.27, 'rectangles')
+    # cv.namedWindow("Computer vision", cv.WINDOW_NORMAL)
     # screenshot = cv.resize(screenshot, (960, 540)) 
-    cv.imshow('Computer vision', screenshot)
+    # cv.imshow('Computer vision', screenshot)
+
+    
     
     print('FPS {}'.format(1 / (time() - loop_time)))
     loop_time = time()
