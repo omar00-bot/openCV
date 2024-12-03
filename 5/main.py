@@ -1,6 +1,6 @@
 import cv2 as cv
 import os
-from windowcapture import window_capture
+from windowcapture_try import window_capture
 from time import time
 
 
@@ -15,7 +15,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # exit()
 
 # initialize the window_capture class
-wincap = window_capture('dBLIND - Flyff Universe - Google Chrome')
+wincap = window_capture('This PC')
 
 
 loop_time = time()
