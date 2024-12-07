@@ -20,6 +20,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 # wincap = window_capture('dBLIND - Flyff Universe - Google Chrome')
 wincap = window_capture('This PC')
 find_image = Vision('robot.jpg')
+# initialize the trackbar window
+find_image.init_control_gui()
 
 loop_time = time()
 while(True):
